@@ -1,0 +1,12 @@
+node_modules
+dist
+client/dist
+.vercel
+.env
+.env.*.local
+__pycache__/
+.python-version
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
