@@ -22,8 +22,8 @@ export default function Upload() {
   const processFile = (selectedFile: File) => {
     if (!selectedFile.name.endsWith('.csv')) {
       toast({
-        title: "Invalid file type",
-        description: "Please upload a valid CSV file.",
+        title: "Type de fichier invalide",
+        description: "Veuillez importer un fichier CSV valide.",
         variant: "destructive"
       });
       return;
@@ -53,7 +53,7 @@ export default function Upload() {
 
         const data = results.data;
         if (data.length === 0) {
-          toast({ title: "Error", description: "CSV file is empty", variant: "destructive" });
+          toast({ title: "Erreur", description: "Le fichier CSV est vide", variant: "destructive" });
           setParsing(false);
           return;
         }
@@ -81,8 +81,8 @@ export default function Upload() {
 
           setProgress(100);
           toast({
-            title: "Success!",
-            description: `Dataset "${datasetName}" uploaded successfully (${data.length} rows).`,
+            title: "Succès",
+            description: `Le jeu de données « ${datasetName} » a été importé (${data.length} lignes).`,
           });
           
           setTimeout(() => {
@@ -91,8 +91,8 @@ export default function Upload() {
 
         } catch (error: any) {
           toast({
-            title: "Upload failed",
-            description: error.message || "An error occurred while saving the dataset.",
+            title: "Échec de l’import",
+            description: error.message || "Une erreur est survenue lors de l’enregistrement du jeu de données.",
             variant: "destructive"
           });
           setParsing(false);
@@ -102,7 +102,7 @@ export default function Upload() {
       },
       error: (error) => {
         toast({
-          title: "Parsing failed",
+          title: "Échec de l’analyse",
           description: error.message,
           variant: "destructive"
         });
@@ -133,8 +133,8 @@ export default function Upload() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-display font-bold text-foreground">Upload Data</h1>
-        <p className="text-lg text-muted-foreground">Upload a CSV file to begin your analysis.</p>
+        <h1 className="text-4xl font-display font-bold text-foreground">Importer des données</h1>
+        <p className="text-lg text-muted-foreground">Importez un fichier CSV pour commencer votre analyse.</p>
       </div>
 
       <Card className="overflow-hidden border-2 shadow-xl shadow-primary/5">
@@ -165,13 +165,13 @@ export default function Upload() {
                   <UploadCloud className="w-12 h-12 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold font-display text-foreground mb-2">
-                  Drag & Drop your CSV
+                  Glissez-déposez votre CSV
                 </h3>
                 <p className="text-muted-foreground mb-6 text-center max-w-sm">
-                  Support for large files. Data is parsed securely in your browser before upload.
+                  Les gros fichiers sont pris en charge. Les données sont analysées dans votre navigateur avant l’envoi.
                 </p>
                 <Button size="lg" className="shadow-lg shadow-primary/20">
-                  Browse Files
+                  Parcourir les fichiers
                 </Button>
               </>
             ) : (
@@ -190,7 +190,7 @@ export default function Upload() {
                 
                 <div className="space-y-3">
                   <h3 className="text-xl font-bold">
-                    {progress === 100 ? "Upload Complete" : "Processing Dataset..."}
+                    {progress === 100 ? "Import terminé" : "Traitement en cours…"}
                   </h3>
                   <p className="text-sm text-muted-foreground truncate px-4">
                     {file?.name}

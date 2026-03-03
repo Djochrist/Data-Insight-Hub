@@ -53,9 +53,9 @@ export default function Visualize() {
       link.download = `${dataset?.name || 'chart'}_${chartType}.png`;
       link.href = url;
       link.click();
-      toast({ title: "Exported successfully", description: "Chart saved as PNG image." });
+      toast({ title: "Export réussi", description: "Le graphique a été enregistré en PNG." });
     } catch (err) {
-      toast({ title: "Export failed", description: "Could not generate PNG image.", variant: "destructive" });
+      toast({ title: "Échec de l’export", description: "Impossible de générer l’image PNG.", variant: "destructive" });
     }
   };
 
@@ -167,8 +167,8 @@ export default function Visualize() {
     <div className="space-y-6 h-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Visualizations</h1>
-          <p className="text-muted-foreground mt-1">Generate beautiful charts from your data.</p>
+          <h1 className="text-3xl font-display font-bold text-foreground">Visualisations</h1>
+          <p className="text-muted-foreground mt-1">Générez des graphiques à partir de vos données.</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -177,7 +177,7 @@ export default function Visualize() {
           ) : (
             <Select value={selectedId?.toString() || ""} onValueChange={handleDatasetChange}>
               <SelectTrigger className="w-full sm:w-64 bg-card shadow-sm">
-                <SelectValue placeholder="Select a dataset" />
+                <SelectValue placeholder="Choisir un jeu de données" />
               </SelectTrigger>
               <SelectContent>
                 {datasets?.map((d) => (
@@ -190,17 +190,17 @@ export default function Visualize() {
           {dataset && (
             <Button variant="secondary" onClick={handleExportPNG} className="shadow-md">
               <Download className="w-4 h-4 mr-2" />
-              Export PNG
+              Exporter en PNG
             </Button>
           )}
         </div>
       </div>
 
-      {!selectedId ? (
+          {!selectedId ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-2xl bg-muted/20">
           <BarChart3 className="w-16 h-16 text-muted-foreground/30 mb-4" />
-          <h3 className="text-xl font-medium text-foreground">Ready to visualize</h3>
-          <p className="text-muted-foreground mt-2">Select a dataset above to start generating charts.</p>
+          <h3 className="text-xl font-medium text-foreground">Prêt à visualiser</h3>
+          <p className="text-muted-foreground mt-2">Sélectionnez un jeu de données pour commencer.</p>
         </div>
       ) : loadingDataset ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 flex-1">
@@ -217,12 +217,12 @@ export default function Visualize() {
           {/* Controls Panel */}
           <Card className="lg:col-span-1 border-border/50 shadow-lg bg-card">
             <CardHeader className="pb-4 border-b">
-              <CardTitle className="text-lg">Chart Settings</CardTitle>
-              <CardDescription>Configure your visualization</CardDescription>
+              <CardTitle className="text-lg">Paramètres du graphique</CardTitle>
+              <CardDescription>Configurez votre visualisation</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground">Chart Type</label>
+                <label className="text-sm font-semibold text-foreground">Type de graphique</label>
                 <div className="grid grid-cols-2 gap-2">
                   <Button 
                     variant={chartType === 'bar' ? 'default' : 'outline'} 
@@ -230,7 +230,7 @@ export default function Visualize() {
                     onClick={() => setChartType('bar')}
                     className="w-full justify-start shadow-sm"
                   >
-                    <BarChart3 className="w-4 h-4 mr-2" /> Bar
+                    <BarChart3 className="w-4 h-4 mr-2" /> Barres
                   </Button>
                   <Button 
                     variant={chartType === 'line' ? 'default' : 'outline'} 
@@ -238,7 +238,7 @@ export default function Visualize() {
                     onClick={() => setChartType('line')}
                     className="w-full justify-start shadow-sm"
                   >
-                    <LineIcon className="w-4 h-4 mr-2" /> Line
+                    <LineIcon className="w-4 h-4 mr-2" /> Ligne
                   </Button>
                   <Button 
                     variant={chartType === 'scatter' ? 'default' : 'outline'} 
@@ -246,7 +246,7 @@ export default function Visualize() {
                     onClick={() => setChartType('scatter')}
                     className="w-full justify-start shadow-sm"
                   >
-                    <Activity className="w-4 h-4 mr-2" /> Scatter
+                    <Activity className="w-4 h-4 mr-2" /> Nuage
                   </Button>
                   <Button 
                     variant={chartType === 'pie' ? 'default' : 'outline'} 
@@ -254,16 +254,16 @@ export default function Visualize() {
                     onClick={() => setChartType('pie')}
                     className="w-full justify-start shadow-sm"
                   >
-                    <PieIcon className="w-4 h-4 mr-2" /> Pie
+                    <PieIcon className="w-4 h-4 mr-2" /> Camembert
                   </Button>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground">X Axis (Category/Label)</label>
+                <label className="text-sm font-semibold text-foreground">Axe X (catégorie/libellé)</label>
                 <Select value={xAxisKey} onValueChange={setXAxisKey}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select column" />
+                    <SelectValue placeholder="Choisir une colonne" />
                   </SelectTrigger>
                   <SelectContent>
                     {columns.map(c => (
@@ -274,14 +274,14 @@ export default function Visualize() {
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-foreground">Y Axis (Metric)</label>
+                <label className="text-sm font-semibold text-foreground">Axe Y (mesure)</label>
                 <Select value={yAxisKey} onValueChange={setYAxisKey}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select numeric column" />
+                    <SelectValue placeholder="Choisir une colonne numérique" />
                   </SelectTrigger>
                   <SelectContent>
                     {numericColumns.length === 0 ? (
-                      <SelectItem value="none" disabled>No numeric columns</SelectItem>
+                      <SelectItem value="none" disabled>Aucune colonne numérique</SelectItem>
                     ) : (
                       numericColumns.map(c => (
                         <SelectItem key={`y-${c.key}`} value={c.key}>{c.name}</SelectItem>
@@ -290,7 +290,7 @@ export default function Visualize() {
                   </SelectContent>
                 </Select>
                 {numericColumns.length === 0 && (
-                  <p className="text-xs text-destructive mt-1">This dataset lacks numeric columns for Y-Axis plotting.</p>
+                  <p className="text-xs text-destructive mt-1">Ce jeu de données ne contient pas de colonnes numériques pour l’axe Y.</p>
                 )}
               </div>
             </CardContent>
@@ -299,12 +299,21 @@ export default function Visualize() {
           {/* Chart Display */}
           <Card className="lg:col-span-3 h-full min-h-[500px] border-border/50 shadow-xl overflow-hidden bg-card flex flex-col">
             <CardHeader className="border-b bg-muted/10 pb-4">
-              <CardTitle className="text-xl font-display">{dataset.name} - {chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart</CardTitle>
+              <CardTitle className="text-xl font-display">
+                {dataset.name} —{" "}
+                {chartType === "bar"
+                  ? "Graphique en barres"
+                  : chartType === "line"
+                    ? "Graphique en ligne"
+                    : chartType === "scatter"
+                      ? "Nuage de points"
+                      : "Diagramme circulaire"}
+              </CardTitle>
               <CardDescription>
                 {chartData.length >= 1000 ? (
-                  <span className="text-amber-500 font-medium">Showing top 1000 rows for performance.</span>
+                  <span className="text-amber-500 font-medium">Affichage des 1000 premières lignes pour les performances.</span>
                 ) : (
-                  `Displaying all ${chartData.length} rows.`
+                  `Affichage de ${chartData.length} lignes.`
                 )}
               </CardDescription>
             </CardHeader>
@@ -318,8 +327,8 @@ export default function Visualize() {
                   <Activity className="w-12 h-12 mb-3 opacity-20" />
                   <p>
                     {!xAxisKey || !yAxisKey
-                      ? "Please select both X and Y axes to render the chart."
-                      : "No data available to render a chart."}
+                      ? "Veuillez choisir les axes X et Y pour afficher le graphique."
+                      : "Aucune donnée disponible pour afficher un graphique."}
                   </p>
                 </div>
               )}

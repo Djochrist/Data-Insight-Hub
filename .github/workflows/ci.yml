@@ -28,4 +28,4 @@ jobs:
         run: npm run build:vercel
 
       - name: Validate Python functions
-        run: python3 -m py_compile api/_crypto.py api/_datasets_store.py api/_datasets_repo.py api/_rate_limit.py api/_db.py api/datasets/index.py api/datasets/'[id]'.py api/auth/register.py api/auth/login.py api/auth/me.py api/auth/logout.py
+        run: python3 -m py_compile api/_datasets_store.py api/_datasets_repo.py api/_rate_limit.py api/_db.py api/datasets/index.py api/datasets/'[id]'.py

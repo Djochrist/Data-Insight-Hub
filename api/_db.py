@@ -205,7 +205,7 @@ def get_dataset(dataset_id: int, *, user_id: Optional[int]) -> Optional[Dict[str
             pass
 
 
-def create_dataset(name: str, columns: Any, data: Any, *, user_id: int) -> Dict[str, Any]:
+def create_dataset(name: str, columns: Any, data: Any, *, user_id: Optional[int]) -> Dict[str, Any]:
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         raise RuntimeError("DATABASE_URL is not set")
@@ -241,7 +241,7 @@ def create_dataset(name: str, columns: Any, data: Any, *, user_id: int) -> Dict[
             pass
 
 
-def delete_dataset(dataset_id: int, *, user_id: int) -> bool:
+def delete_dataset(dataset_id: int) -> bool:
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         raise RuntimeError("DATABASE_URL is not set")
@@ -252,11 +252,10 @@ def delete_dataset(dataset_id: int, *, user_id: int) -> bool:
         rows = conn.run(
             """
             DELETE FROM datasets
-            WHERE id = :id AND user_id = :user_id
+            WHERE id = :id
             RETURNING id;
             """,
             id=dataset_id,
-            user_id=user_id,
         )
         return bool(rows)
     finally:
@@ -402,23 +401,6 @@ def delete_session(token_hash: str) -> None:
     try:
         _ensure_schema(conn)
         conn.run("DELETE FROM sessions WHERE token_hash = :token_hash;", token_hash=token_hash)
-    finally:
-        try:
-            conn.close()
-        except Exception:
-            pass
-
-
-def count_datasets_for_user(user_id: int) -> int:
-    database_url = os.environ.get("DATABASE_URL")
-    if not database_url:
-        raise RuntimeError("DATABASE_URL is not set")
-    config = _parse_database_url(database_url)
-    conn = _connect(config)
-    try:
-        _ensure_schema(conn)
-        rows = conn.run("SELECT COUNT(*) FROM datasets WHERE user_id = :user_id;", user_id=user_id)
-        return int(rows[0][0]) if rows else 0
     finally:
         try:
             conn.close()

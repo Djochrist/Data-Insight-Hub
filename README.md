@@ -2,6 +2,9 @@
 
 Application web pour importer/analyser des datasets (CSV côté client) et visualiser des métriques via une API `/api/datasets`.
 
+> **Statut : en développement.**  
+> Ce projet est encore en cours de construction. Certaines fonctionnalités peuvent changer, être incomplètes ou instables.
+
 ## Sommaire
 
 - Fonctionnalités
@@ -82,14 +85,11 @@ Routes utilisées par le client :
 - `POST /api/datasets` : création
 - `DELETE /api/datasets/:id` : suppression
 
-### Auth
+### Protection (optionnelle)
 
-- `POST /api/auth/register` : création d’utilisateur (bootstrap)
-- `POST /api/auth/login` : connexion (retourne un token)
-- `GET /api/auth/me` : session courante
-- `POST /api/auth/logout` : invalide la session
+Par défaut l’API est publique. Pour éviter que n’importe qui puisse écrire/supprimer des datasets, définis `ADMIN_TOKEN` (recommandé en production).
 
-Le frontend utilise `Authorization: Bearer <token>`.
+- Avec `ADMIN_TOKEN` : `POST /api/datasets` et `DELETE /api/datasets/:id` exigent `Authorization: Bearer <ADMIN_TOKEN>`.
 
 ### Contrat (simplifié)
 

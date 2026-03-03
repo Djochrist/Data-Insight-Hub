@@ -67,24 +67,17 @@ def _rate_limit(handler: BaseHTTPRequestHandler, kind: str) -> Tuple[bool, Dict[
     return allowed, headers
 
 
-def _token(handler: BaseHTTPRequestHandler) -> Optional[str]:
-    auth = handler.headers.get("authorization") or ""
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN") or ""
+
+
+def _is_admin(handler: BaseHTTPRequestHandler) -> bool:
+    if not ADMIN_TOKEN:
+        return True
+    auth = (handler.headers.get("authorization") or "").strip()
     if auth.lower().startswith("bearer "):
-        return auth.split(" ", 1)[1].strip() or None
-    return None
-
-
-def _user(handler: BaseHTTPRequestHandler) -> Optional[Dict[str, Any]]:
-    token = _token(handler)
-    if not token:
-        return None
-    try:
-        from _crypto import sha256_hex  # local import
-        from _db import get_user_by_token_hash
-
-        return get_user_by_token_hash(sha256_hex(token))
-    except Exception:
-        return None
+        token = auth.split(" ", 1)[1].strip()
+        return token == ADMIN_TOKEN
+    return False
 
 
 class handler(BaseHTTPRequestHandler):
@@ -93,16 +86,11 @@ class handler(BaseHTTPRequestHandler):
         if not allowed:
             _send_json(self, 429, {"message": "Too Many Requests"}, extra_headers=rl_headers)
             return
-        user = _user(self)
-        public_read = (os.environ.get("PUBLIC_READ") or "").lower() in {"1", "true", "yes"}
-        if not public_read and not user:
-            _send_json(self, 401, {"message": "Unauthorized"}, extra_headers=rl_headers)
-            return
         dataset_id = _parse_id(self.path)
         if dataset_id is None:
             _send_json(self, 404, {"message": "Dataset not found"}, extra_headers=rl_headers)
             return
-        dataset = get_dataset(dataset_id, user_id=(user["id"] if user else None))
+        dataset = get_dataset(dataset_id, user_id=None)
         if not dataset:
             _send_json(self, 404, {"message": "Dataset not found"}, extra_headers=rl_headers)
             return
@@ -113,15 +101,14 @@ class handler(BaseHTTPRequestHandler):
         if not allowed:
             _send_json(self, 429, {"message": "Too Many Requests"}, extra_headers=rl_headers)
             return
-        user = _user(self)
-        if not user:
+        if not _is_admin(self):
             _send_json(self, 401, {"message": "Unauthorized"}, extra_headers=rl_headers)
             return
         dataset_id = _parse_id(self.path)
         if dataset_id is None:
             _send_json(self, 404, {"message": "Dataset not found"}, extra_headers=rl_headers)
             return
-        deleted = delete_dataset(dataset_id, user_id=user["id"])
+        deleted = delete_dataset(dataset_id)
         if not deleted:
             _send_json(self, 404, {"message": "Dataset not found"}, extra_headers=rl_headers)
             return

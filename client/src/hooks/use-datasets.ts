@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type DatasetResponse, type DatasetsListResponse } from "@shared/routes";
 import type { InsertDataset } from "@shared/schema";
 import { z } from "zod";
-import { authHeader } from "@/lib/auth";
 
 function parseWithLogging<T>(schema: z.ZodSchema<T>, data: unknown, label: string): T {
   const result = schema.safeParse(data);
@@ -17,8 +16,8 @@ export function useDatasets() {
   return useQuery({
     queryKey: [api.datasets.list.path],
     queryFn: async () => {
-      const res = await fetch(api.datasets.list.path, { headers: authHeader() });
-      if (!res.ok) throw new Error("Failed to fetch datasets");
+      const res = await fetch(api.datasets.list.path);
+      if (!res.ok) throw new Error("Impossible de récupérer les jeux de données");
       const data = await res.json();
       return parseWithLogging(api.datasets.list.responses[200], data, "datasets.list");
     },
@@ -31,9 +30,9 @@ export function useDataset(id: number | null | undefined) {
     queryFn: async () => {
       if (!id) return null;
       const url = buildUrl(api.datasets.get.path, { id });
-      const res = await fetch(url, { headers: authHeader() });
+      const res = await fetch(url);
       if (res.status === 404) return null;
-      if (!res.ok) throw new Error("Failed to fetch dataset");
+      if (!res.ok) throw new Error("Impossible de récupérer le jeu de données");
       const data = await res.json();
       return parseWithLogging(api.datasets.get.responses[200], data, "datasets.get");
     },
@@ -48,15 +47,15 @@ export function useCreateDataset() {
       // Don't log full data to avoid locking up console with huge JSON payloads
       const res = await fetch(api.datasets.create.path, {
         method: api.datasets.create.method,
-        headers: { "Content-Type": "application/json", ...authHeader() },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) {
         if (res.status === 400) {
           const errData = await res.json();
-          throw new Error(errData.message || "Validation failed");
+          throw new Error(errData.message || "Validation impossible");
         }
-        throw new Error("Failed to upload dataset");
+        throw new Error("Impossible d’importer le jeu de données");
       }
       return await res.json();
     },
@@ -71,9 +70,9 @@ export function useDeleteDataset() {
   return useMutation({
     mutationFn: async (id: number) => {
       const url = buildUrl(api.datasets.delete.path, { id });
-      const res = await fetch(url, { method: api.datasets.delete.method, headers: authHeader() });
-      if (res.status === 404) throw new Error("Dataset not found");
-      if (!res.ok) throw new Error("Failed to delete dataset");
+      const res = await fetch(url, { method: api.datasets.delete.method });
+      if (res.status === 404) throw new Error("Jeu de données introuvable");
+      if (!res.ok) throw new Error("Impossible de supprimer le jeu de données");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.datasets.list.path] });

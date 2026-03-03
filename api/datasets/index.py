@@ -15,8 +15,7 @@ from _datasets_repo import create_dataset, list_datasets  # noqa: E402
 from _rate_limit import check as check_rate_limit  # noqa: E402
 
 MAX_BODY_BYTES = 4_000_000
-MAX_DATASETS_PER_USER = int(os.environ.get("MAX_DATASETS_PER_USER") or "50")
-PUBLIC_READ = (os.environ.get("PUBLIC_READ") or "").lower() in {"1", "true", "yes"}
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN") or ""
 
 
 def _read_json(handler: BaseHTTPRequestHandler) -> Optional[Any]:
@@ -69,24 +68,14 @@ def _rate_limit(handler: BaseHTTPRequestHandler, kind: str) -> Tuple[bool, Dict[
     return allowed, headers
 
 
-def _token(handler: BaseHTTPRequestHandler) -> Optional[str]:
-    auth = handler.headers.get("authorization") or ""
+def _is_admin(handler: BaseHTTPRequestHandler) -> bool:
+    if not ADMIN_TOKEN:
+        return True
+    auth = (handler.headers.get("authorization") or "").strip()
     if auth.lower().startswith("bearer "):
-        return auth.split(" ", 1)[1].strip() or None
-    return None
-
-
-def _user(handler: BaseHTTPRequestHandler) -> Optional[Dict[str, Any]]:
-    token = _token(handler)
-    if not token:
-        return None
-    try:
-        from _crypto import sha256_hex  # local import
-        from _db import get_user_by_token_hash
-
-        return get_user_by_token_hash(sha256_hex(token))
-    except Exception:
-        return None
+        token = auth.split(" ", 1)[1].strip()
+        return token == ADMIN_TOKEN
+    return False
 
 
 class handler(BaseHTTPRequestHandler):
@@ -95,11 +84,7 @@ class handler(BaseHTTPRequestHandler):
         if not allowed:
             _send_json(self, 429, {"message": "Too Many Requests"}, extra_headers=rl_headers)
             return
-        user = _user(self)
-        if not PUBLIC_READ and not user:
-            _send_json(self, 401, {"message": "Unauthorized"}, extra_headers=rl_headers)
-            return
-        _send_json(self, 200, list_datasets(user_id=(user["id"] if user else None)), extra_headers=rl_headers)
+        _send_json(self, 200, list_datasets(user_id=None), extra_headers=rl_headers)
 
     def do_POST(self) -> None:  # noqa: N802
         allowed, rl_headers = _rate_limit(self, "write")
@@ -107,8 +92,7 @@ class handler(BaseHTTPRequestHandler):
             _send_json(self, 429, {"message": "Too Many Requests"}, extra_headers=rl_headers)
             return
 
-        user = _user(self)
-        if not user:
+        if not _is_admin(self):
             _send_json(self, 401, {"message": "Unauthorized"}, extra_headers=rl_headers)
             return
 
@@ -126,14 +110,9 @@ class handler(BaseHTTPRequestHandler):
             _send_json(self, 400, {"message": "Invalid JSON payload", "field": ""}, extra_headers=rl_headers)
             return
 
-        created, error = create_dataset(
-            payload,
-            user_id=user["id"],
-            max_datasets_per_user=MAX_DATASETS_PER_USER,
-        )
+        created, error = create_dataset(payload)
         if error:
-            status = 401 if error.get("message") == "Unauthorized" else 400
-            _send_json(self, status, error, extra_headers=rl_headers)
+            _send_json(self, 400, error, extra_headers=rl_headers)
             return
 
         _send_json(self, 201, created, extra_headers=rl_headers)

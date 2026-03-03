@@ -12,25 +12,16 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { LayoutDashboard, UploadCloud, TableProperties, BarChart3, Database } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { getToken } from "@/lib/auth";
-import { useLogout, useMe } from "@/hooks/use-auth";
 
 const navItems = [
-  { title: "Dashboard", path: "/", icon: LayoutDashboard },
-  { title: "Upload Data", path: "/upload", icon: UploadCloud },
-  { title: "Data Explorer", path: "/explore", icon: TableProperties },
-  { title: "Visualizations", path: "/visualize", icon: BarChart3 },
+  { title: "Tableau de bord", path: "/", icon: LayoutDashboard },
+  { title: "Importer des données", path: "/upload", icon: UploadCloud },
+  { title: "Explorateur de données", path: "/explore", icon: TableProperties },
+  { title: "Visualisations", path: "/visualize", icon: BarChart3 },
 ];
-
-const REQUIRE_AUTH =
-  (import.meta.env.VITE_REQUIRE_AUTH || (import.meta.env.PROD ? "true" : "false")).toLowerCase() === "true";
 
 export function AppSidebar() {
   const [location] = useLocation();
-  const token = getToken();
-  const me = useMe(REQUIRE_AUTH && Boolean(token));
-  const logout = useLogout();
 
   return (
     <Sidebar variant="sidebar" className="border-r">
@@ -48,7 +39,7 @@ export function AppSidebar() {
       <SidebarContent className="px-2 py-4">
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-            Workspace
+            Espace de travail
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -76,21 +67,6 @@ export function AppSidebar() {
       </SidebarContent>
       
       <SidebarFooter className="p-4 text-xs text-muted-foreground border-t space-y-2">
-        {REQUIRE_AUTH ? (
-          <div className="flex items-center justify-between gap-2">
-            <div className="truncate" title={me.data?.email || ""}>
-              {me.data?.email || "Signed out"}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => logout.mutate()}
-              disabled={logout.isPending || !token}
-            >
-              Logout
-            </Button>
-          </div>
-        ) : null}
         <div className="text-center">NexusData Analytics © 2026</div>
       </SidebarFooter>
     </Sidebar>

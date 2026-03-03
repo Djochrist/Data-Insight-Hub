@@ -32,53 +32,31 @@ def get_dataset(dataset_id: int, *, user_id: Optional[int]) -> Optional[Dict[str
     return get_db(dataset_id, user_id=user_id)
 
 
-def create_dataset(
-    payload: Any,
-    *,
-    user_id: Optional[int],
-    max_datasets_per_user: int,
-) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, str]]]:
+def create_dataset(payload: Any) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, str]]]:
     validated, error = validate_insert(payload)
     if error:
         return None, error
 
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
-        # In-memory mode: still requires a user_id to avoid "global public" writes in prod.
-        if user_id is None:
-            return None, {"message": "Unauthorized"}
         return create_mem(validated), None
 
-    from _db import (
-        count_datasets_for_user,
-        create_dataset as create_db,
-    )  # local import to avoid hard dep in dev
-
-    if user_id is None:
-        return None, {"message": "Unauthorized"}
-
-    current = count_datasets_for_user(user_id)
-    if current >= max_datasets_per_user:
-        return None, {"message": "Dataset quota exceeded"}
+    from _db import create_dataset as create_db  # local import to avoid hard dep in dev
 
     created = create_db(
         validated["name"],
         validated["columns"],
         validated["data"],
-        user_id=user_id,
+        user_id=None,
     )
     return created, None
 
 
-def delete_dataset(dataset_id: int, *, user_id: Optional[int]) -> bool:
+def delete_dataset(dataset_id: int) -> bool:
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
-        if user_id is None:
-            return False
         return delete_mem(dataset_id)
 
     from _db import delete_dataset as delete_db  # local import to avoid hard dep in dev
 
-    if user_id is None:
-        return False
-    return delete_db(dataset_id, user_id=user_id)
+    return delete_db(dataset_id)

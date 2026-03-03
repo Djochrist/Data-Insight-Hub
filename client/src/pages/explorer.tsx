@@ -66,8 +66,8 @@ export default function Explorer() {
     <div className="space-y-6 h-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Data Explorer</h1>
-          <p className="text-muted-foreground mt-1">View and filter your tabular data.</p>
+          <h1 className="text-3xl font-display font-bold text-foreground">Explorateur de données</h1>
+          <p className="text-muted-foreground mt-1">Consultez et filtrez vos données tabulaires.</p>
         </div>
         
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -79,7 +79,7 @@ export default function Explorer() {
               onValueChange={handleDatasetChange}
             >
               <SelectTrigger className="w-full sm:w-64 bg-card shadow-sm">
-                <SelectValue placeholder="Select a dataset" />
+                <SelectValue placeholder="Choisir un jeu de données" />
               </SelectTrigger>
               <SelectContent>
                 {datasets?.map((d) => (
@@ -90,9 +90,9 @@ export default function Explorer() {
           )}
 
           {dataset && (
-            <Button variant="outline" onClick={exportCsv} className="shrink-0" title="Export CSV">
+            <Button variant="outline" onClick={exportCsv} className="shrink-0" title="Exporter en CSV">
               <Download className="w-4 h-4 mr-2" />
-              Export
+              Exporter
             </Button>
           )}
         </div>
@@ -101,8 +101,8 @@ export default function Explorer() {
       {!selectedId ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-2xl bg-muted/20">
           <TableProperties className="w-16 h-16 text-muted-foreground/30 mb-4" />
-          <h3 className="text-xl font-medium text-foreground">No Dataset Selected</h3>
-          <p className="text-muted-foreground mt-2">Please select a dataset from the dropdown above to view its contents.</p>
+          <h3 className="text-xl font-medium text-foreground">Aucun jeu de données sélectionné</h3>
+          <p className="text-muted-foreground mt-2">Choisissez un jeu de données dans la liste ci-dessus pour afficher son contenu.</p>
         </div>
       ) : loadingDataset ? (
         <Card className="flex-1 p-6 space-y-4">
@@ -129,7 +129,7 @@ export default function Explorer() {
                 {paginatedRows.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={columns.length} className="text-center py-12 text-muted-foreground">
-                      No data available.
+                      Aucune donnée disponible.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -151,7 +151,7 @@ export default function Explorer() {
           
           <div className="border-t p-4 flex items-center justify-between bg-muted/10">
             <div className="text-sm text-muted-foreground">
-              Showing <span className="font-medium text-foreground">{(page - 1) * pageSize + 1}</span> to <span className="font-medium text-foreground">{Math.min(page * pageSize, rows.length)}</span> of <span className="font-medium text-foreground">{rows.length}</span> rows
+              Affichage <span className="font-medium text-foreground">{(page - 1) * pageSize + 1}</span> à <span className="font-medium text-foreground">{Math.min(page * pageSize, rows.length)}</span> sur <span className="font-medium text-foreground">{rows.length}</span> lignes
             </div>
             <div className="flex gap-2">
               <Button 
@@ -160,7 +160,7 @@ export default function Explorer() {
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
               >
-                <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+                <ChevronLeft className="w-4 h-4 mr-1" /> Préc.
               </Button>
               <Button 
                 variant="outline" 
@@ -168,7 +168,7 @@ export default function Explorer() {
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages || totalPages === 0}
               >
-                Next <ChevronRight className="w-4 h-4 ml-1" />
+                Suiv. <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
           </div>
