@@ -56,9 +56,9 @@ app.use("/api", (req, res, next) => {
   const key = req.ip || "unknown";
 
   if (apiRate.size > 10_000) {
-    for (const [k, v] of apiRate.entries()) {
-      if (now >= v.resetAt) apiRate.delete(k);
-    }
+    apiRate.forEach((value, mapKey) => {
+      if (now >= value.resetAt) apiRate.delete(mapKey);
+    });
   }
 
   const current = apiRate.get(key);

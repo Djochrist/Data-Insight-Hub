@@ -81,8 +81,8 @@ export default function Visualize() {
     return data.slice(0, 1000); 
   }, [dataset]);
 
-  const renderChart = () => {
-    if (!xAxisKey || !yAxisKey || chartData.length === 0) return null;
+  const renderChart = (): JSX.Element => {
+    if (!xAxisKey || !yAxisKey || chartData.length === 0) return <></>;
 
     const commonProps = {
       data: chartData,
@@ -123,7 +123,7 @@ export default function Visualize() {
             <Scatter name={dataset?.name} data={chartData} fill="var(--chart-4)" />
           </ScatterChart>
         );
-      case 'pie':
+      case 'pie': {
         // Prepare pie data (aggregate by xAxisKey)
         const pieDataMap = chartData.reduce((acc, row) => {
           const key = String(row[xAxisKey] || 'Unknown');
@@ -157,6 +157,9 @@ export default function Visualize() {
             </Pie>
           </PieChart>
         );
+      }
+      default:
+        return <></>;
     }
   };
 
@@ -306,14 +309,18 @@ export default function Visualize() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 p-6" ref={chartRef}>
-              {xAxisKey && yAxisKey ? (
+              {xAxisKey && yAxisKey && chartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%" minHeight={400}>
                   {renderChart()}
                 </ResponsiveContainer>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground min-h-[400px]">
                   <Activity className="w-12 h-12 mb-3 opacity-20" />
-                  <p>Please select both X and Y axes to render the chart.</p>
+                  <p>
+                    {!xAxisKey || !yAxisKey
+                      ? "Please select both X and Y axes to render the chart."
+                      : "No data available to render a chart."}
+                  </p>
                 </div>
               )}
             </CardContent>
