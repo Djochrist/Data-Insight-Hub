@@ -12,7 +12,6 @@ import Explorer from "@/pages/explorer";
 import Visualize from "@/pages/visualize";
 import About from "@/pages/about";
 import { AppSidebar } from "@/components/app-sidebar";
-import { DevBanner } from "@/components/dev-banner";
 
 function AppRoutes() {
   return (
@@ -50,7 +49,6 @@ function App() {
           <div className="flex min-h-screen w-full bg-background text-foreground">
             <AppSidebar />
             <div className="flex flex-col flex-1 min-w-0">
-              <DevBanner />
               <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-3 border-b bg-card/85 px-4 backdrop-blur-md md:px-6">
                 <div className="flex min-w-0 items-center gap-3">
                   <SidebarTrigger className="h-9 w-9 rounded-xl border border-border bg-background/80 hover:bg-accent" />
