@@ -86,11 +86,13 @@ export default function Upload() {
     setProgress(10);
     setProgressLabel("Lecture du fichier");
 
+    const useWorker = !import.meta.env.PROD && typeof Worker !== "undefined";
+
     Papa.parse(selectedFile, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
-      worker: true,
+      worker: useWorker,
       complete: async (results) => {
         setProgress(50);
         setProgressLabel("Vérification du contenu");
